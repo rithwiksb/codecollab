@@ -1,0 +1,6 @@
+backend/tests/
+backend/.env.example
+backend/codecollab.db
+backend/venv/
+backend/static/
+frontend/node_modules/
