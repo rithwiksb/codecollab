@@ -4,6 +4,7 @@ import { getRoom, updateRoomCode } from '../services/roomService';
 import CodeEditor from '../components/CodeEditor';
 import VideoCall from '../components/VideoCall';
 import ChatPanel from '../components/ChatPanel';
+import mediaStreamManager from '../utils/mediaManager';
 
 const RoomPage = () => {
   const { roomId } = useParams();
@@ -22,6 +23,17 @@ const RoomPage = () => {
   
   // For debouncing code updates
   const [saveTimeout, setSaveTimeout] = useState(null);
+
+  // Force stop all camera and microphone access using global manager
+  const forceStopAllMedia = () => {
+    console.log("Force stopping all media devices using global manager...");
+    console.log("Active media before cleanup:", mediaStreamManager.getActiveCount());
+    
+    // Use the global media stream manager
+    mediaStreamManager.stopAllStreams();
+    
+    console.log("Active media after cleanup:", mediaStreamManager.getActiveCount());
+  };
 
   useEffect(() => {
     const loadRoom = async () => {
@@ -66,11 +78,13 @@ const RoomPage = () => {
       setLoading(false);
     }
     
-    // Clean up any pending timeouts on unmount
+    // Clean up any pending timeouts on unmount AND force stop media
     return () => {
       if (saveTimeout) {
         clearTimeout(saveTimeout);
       }
+      // Force stop media when component unmounts
+      forceStopAllMedia();
     };
   }, [roomId, navigate, saveTimeout]);
 
@@ -110,20 +124,38 @@ const RoomPage = () => {
     setSaveTimeout(timeout);
   };
 
+  const handleLeaveRoom = () => {
+    console.log("Leaving room - force stopping media...");
+    forceStopAllMedia();
+    
+    // Small delay to ensure cleanup completes
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 100);
+  };
+
   const handleDeleteRoom = async () => {
     if (!window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) return;
     try {
+      // Use the original DELETE endpoint with proper JWT token
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/rooms/${roomId}`, {
+      const res = await fetch(`http://localhost:5001/api/rooms/${roomId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       });
       if (res.ok) {
         navigate('/dashboard');
       } else {
+        console.error('Delete failed with status:', res.status);
+        const errorText = await res.text();
+        console.error('Error details:', errorText);
         alert("Failed to delete room.");
       }
     } catch (err) {
+      console.error('Delete error:', err);
       alert("Error deleting room.");
     }
   };
@@ -136,7 +168,17 @@ const RoomPage = () => {
         <div className="room-controls">
           <button 
             className="control-btn"
-            onClick={() => navigate('/dashboard')}
+            onClick={handleLeaveRoom}
+          >
+            Leave Room
+          </button>
+          <button 
+            className="control-btn"
+            onClick={() => {
+              console.log("Back to Dashboard - force stopping media...");
+              forceStopAllMedia();
+              setTimeout(() => navigate('/dashboard'), 100);
+            }}
           >
             Back to Dashboard
           </button>

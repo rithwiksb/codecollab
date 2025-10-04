@@ -1,0 +1,46 @@
+services:
+  # Backend Service
+  - type: web
+    name: codecollab-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    env: production
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        value: sqlite:///codecollab.db
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: codecollab-frontend
+          property: host
+    buildCommand: ""
+    startCommand: python working_server.py
+
+  # Frontend Service
+  - type: web
+    name: codecollab-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/frontend/Dockerfile
+    dockerContext: ./frontend/frontend
+    env: production
+    plan: free
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: codecollab-backend
+          property: host
+      - key: VITE_SOCKET_URL
+        fromService:
+          type: web
+          name: codecollab-backend
+          property: host
+    buildCommand: npm run build
+    staticPublishPath: ./dist

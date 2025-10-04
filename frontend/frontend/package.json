@@ -16,6 +16,7 @@
     "@codemirror/lang-python": "^6.2.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@monaco-editor/react": "^4.6.0",
     "@mui/material": "^7.1.1",
     "@uiw/react-codemirror": "^4.23.12",
     "axios": "^1.9.0",

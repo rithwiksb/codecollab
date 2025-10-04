@@ -48,7 +48,14 @@ export const registerUser = async (username, email, password) => {
       return { success: false, message: data.msg || 'Registration failed' };
     }
     
-    return { success: true };
+    // Store token and return user data for immediate login
+    localStorage.setItem('token', data.access_token);
+    
+    return { 
+      success: true, 
+      user: data.user,
+      token: data.access_token
+    };
     
   } catch (error) {
     console.error('Registration error:', error);

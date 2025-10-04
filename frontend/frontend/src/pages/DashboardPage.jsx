@@ -67,6 +67,19 @@ const DashboardPage = () => {
         </button>
       </div>
 
+      {/* Notice about delete room functionality */}
+      <div className="notice-banner" style={{
+        backgroundColor: '#fff3cd',
+        border: '1px solid #ffeaa7',
+        borderRadius: '8px',
+        padding: '12px 16px',
+        margin: '20px 0',
+        color: '#856404'
+      }}>
+        <strong>Notice:</strong> The delete room functionality is currently not working as expected and will be fixed soon. 
+        You can still create and join rooms normally.
+      </div>
+
       {/* Rooms in the middle */}
       <section className="dashboard-section">
         <div className="section-header">
