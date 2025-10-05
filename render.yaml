@@ -20,17 +20,13 @@ services:
           type: web
           name: codecollab-frontend
           property: host
-    buildCommand: ""
-    startCommand: python working_server.py
 
   # Frontend Service
-  - type: web
+  - type: static
     name: codecollab-frontend
-    runtime: docker
-    dockerfilePath: ./frontend/frontend/Dockerfile
-    dockerContext: ./frontend/frontend
-    env: production
-    plan: free
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    rootDir: ./frontend/frontend
     envVars:
       - key: VITE_API_BASE_URL
         fromService:
@@ -42,5 +38,3 @@ services:
           type: web
           name: codecollab-backend
           property: host
-    buildCommand: npm run build
-    staticPublishPath: ./dist
