@@ -21,9 +21,10 @@ services:
           name: codecollab-frontend
           property: host
 
-  # Frontend Service
-  - type: static
+  # Frontend Service (Static Site)
+  - type: web
     name: codecollab-frontend
+    runtime: static
     buildCommand: npm run build
     staticPublishPath: ./dist
     rootDir: ./frontend/frontend
