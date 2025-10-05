@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api/rooms';
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/rooms`;
 
 // Get all rooms for the user
 export const getUserRooms = async (token) => {

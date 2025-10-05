@@ -11,7 +11,7 @@ class SocketService {
   connect(token) {
     if (this.socket) return;
     
-    this.socket = io('http://localhost:5000', {
+    this.socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
       auth: { token },
       query: { token }
     });

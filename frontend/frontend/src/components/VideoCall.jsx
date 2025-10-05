@@ -76,7 +76,7 @@ const VideoCall = ({ roomId }) => {
   const initializeVideoCall = async () => {
     try {
       // Initialize Socket.IO
-      socketRef.current = io("http://localhost:5000", {
+      socketRef.current = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5000", {
         query: { token: localStorage.getItem("token") },
       });
 
